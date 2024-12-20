@@ -52,15 +52,15 @@ sol_storage! {
 
         // Total tokens sold
         uint256 tokens_sold;
-
-        // Remove sale_active and add these new fields
+        
+        // For evaluation
         uint256 sale_start_time;
         uint256 sale_end_time;
         bool emergency_stop;
     }
 }
 
-// Declare Solidity error and event types
+
 sol! {
     // Events
     error SaleAlreadyInitialized();
@@ -266,7 +266,7 @@ impl TokenSales {
     fn buy_mock_token(&mut self, amount: U256) -> Result<(), TokenSalesError> {
         self.validate_sale_status()?;
 
-        // Add check for max_tokens_to_sell
+        // Check for max_tokens_to_sell
         if self.tokens_sold.get() + amount > self.max_tokens_to_sell.get() {
             return Err(TokenSalesError::MaxTokensToSellReached(
                 MaxTokensToSellReached {},
@@ -326,7 +326,8 @@ impl TokenSales {
 
         Ok(())
     }
-
+     
+    // Can claim when the sale is over
     pub fn claim_tokens(&mut self) -> Result<(), TokenSalesError> {
         self.validate_sale_over()?;
         let sender = msg::sender();
